@@ -1,40 +1,60 @@
 # Bitespeed Identity Reconciliation Service
 
-This service provides an API endpoint for identifying and linking customer contacts across multiple purchases.
+A TypeScript-based service that provides an API endpoint for identifying and linking customer contacts across multiple purchases.
 
-## Setup
+## Tech Stack
+- TypeScript
+- Node.js & Express.js
+- PostgreSQL
+- Nodemon (for development)
 
-1. Install dependencies:
-```bash
-npm install
-```
+## Prerequisites
+- Node.js (v14 or higher)
+- PostgreSQL
+- npm or yarn
 
-2. Create a `.env` file in the root directory with the following variables:
-```
-DB_USER=your_db_user
-DB_PASSWORD=your_db_password
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=bitespeed
-PORT=3000
-```
+## Project Structure
 
-3. Make sure PostgreSQL is installed and running on your system.
+## Installation & Setup
 
-4. Create a database named 'bitespeed':
-```sql
-CREATE DATABASE bitespeed;
-```
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd bitespeed_assessment
+   ```
 
-5. Start the server:
-```bash
-npm start
-```
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-For development with auto-reload:
-```bash
-npm run dev
-```
+3. **Environment Configuration**
+   Create a `.env` file in the root directory:
+   ```env
+   DB_USER=your_db_user
+   DB_PASSWORD=your_db_password
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_NAME=bitespeed
+   PORT=3000
+   ```
+
+4. **Database Setup**
+   ```sql
+   CREATE DATABASE bitespeed;
+   ```
+
+5. **Build & Run**
+   ```bash
+   # Build TypeScript
+   npm run build
+
+   # Start production server
+   npm start
+
+   # Start development server (with auto-reload)
+   npm run dev
+   ```
 
 ## API Documentation
 
@@ -42,28 +62,35 @@ npm run dev
 
 Identifies and consolidates customer contact information.
 
-**Request Body:**
-```json
-{
-  "email": "string?",
-  "phoneNumber": "string?"
+#### Request
+- Method: `POST`
+- Endpoint: `/identify`
+- Content-Type: `application/json`
+
+#### Request Body Type
+```typescript
+interface ContactRequest {
+  email?: string;
+  phoneNumber?: string;
 }
 ```
-Note: At least one of email or phoneNumber must be provided.
+> Note: At least one of email or phoneNumber must be provided.
 
-**Response:**
-```json
-{
-  "contact": {
-    "primaryContactId": number,
-    "emails": string[],
-    "phoneNumbers": string[],
-    "secondaryContactIds": number[]
+#### Response Type
+```typescript
+interface ContactResponse {
+  contact: {
+    primaryContactId: number;
+    emails: string[];
+    phoneNumbers: string[];
+    secondaryContactIds: number[];
   }
 }
 ```
 
-**Example Request:**
+#### Example
+
+**Request:**
 ```json
 {
   "email": "mcfly@hillvalley.edu",
@@ -71,7 +98,7 @@ Note: At least one of email or phoneNumber must be provided.
 }
 ```
 
-**Example Response:**
+**Response:**
 ```json
 {
   "contact": {
@@ -85,18 +112,51 @@ Note: At least one of email or phoneNumber must be provided.
 
 ## Error Handling
 
-- 400 Bad Request: When neither email nor phoneNumber is provided
-- 500 Internal Server Error: For any server-side errors
+| Status Code | Description | Scenario |
+|-------------|-------------|----------|
+| 400 | Bad Request | Neither email nor phoneNumber provided |
+| 500 | Internal Server Error | Server-side errors |
 
-## Implementation Details
+## Business Logic
 
-The service maintains a PostgreSQL database with a `contact` table that tracks:
-- Primary and secondary contacts
-- Contact linking through email or phone number
-- Creation and update timestamps
-- Soft deletion support
-
-The linking logic ensures:
+### Contact Linking Rules
 1. The oldest contact becomes the primary contact
 2. New contacts with matching email/phone become secondary contacts
-3. Primary contacts can be converted to secondary if linked to an older primary contact 
+3. Primary contacts can be converted to secondary if linked to an older primary contact
+
+### Type Safety Implementation
+- Strict TypeScript types for request/response handling
+- Proper null handling for optional fields
+- Enum-based type checking for contact precedence ('primary' | 'secondary')
+- Type-safe database interactions
+
+## Development
+
+### Available Scripts
+```bash
+npm run build     # Compile TypeScript
+npm start         # Start production server
+npm run dev       # Start development server with nodemon
+```
+
+### Development Features
+- Hot reloading with nodemon
+- TypeScript compilation watching
+- Automatic server restart on file changes
+
+## Database Schema
+
+The service uses a PostgreSQL table with the following structure:
+
+**Contact Table:**
+- Primary and secondary contact tracking
+- Email and phone number linking
+- Timestamps for creation and updates
+- Soft deletion support
+
+## Contributing
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a new Pull Request
