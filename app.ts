@@ -1,8 +1,11 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const initializeDatabase = require('./db/init');
-const contactRoutes = require('./routes/contact');
+import dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+import initializeDatabase from './db/init';
+import contactRoutes from './routes/contact';
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
 
@@ -25,4 +28,4 @@ initializeDatabase()
   .catch((error) => {
     console.error('Failed to initialize database:', error);
     process.exit(1);
-  });
+  }); 

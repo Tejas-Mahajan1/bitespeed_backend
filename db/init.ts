@@ -1,6 +1,6 @@
-const pool = require('../config/database');
+import pool from '../config/database';
 
-async function initializeDatabase() {
+async function initializeDatabase(): Promise<void> {
   try {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS contact (
@@ -21,4 +21,4 @@ async function initializeDatabase() {
   }
 }
 
-module.exports = initializeDatabase; 
+export default initializeDatabase; 
